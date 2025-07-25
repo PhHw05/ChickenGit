@@ -1,0 +1,208 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - MyShop</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    @* Đường dẫn CSS của bạn, đảm bảo nằm trong thư mục wwwroot *@
+    <link href="@Url.Content("~/Layout/css.css")" rel="stylesheet" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40jmhwUa6hJTYWzJlmXg6x1T3lP6xY42v9hR2e6p3rN0A9Qh6J3r5g2F6oG3a5L3o3g3g3g3g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    @using MongoCore.Models.ModelViews
+    @using System.Text.Json
+    @using Microsoft.AspNetCore.Http
+    @using System.Linq @* Cần cho phương thức .Any() *@
+
+    <style>
+        /* Custom CSS (giữ nguyên như đã cung cấp trước đó) */
+        body {
+            font-family: 'Nunito', sans-serif;
+        }
+
+        .dmx-blue-dark {
+            background-color: #288ad6;
+        }
+
+        .dmx-yellow {
+            background-color: #ffd400;
+        }
+
+        .dmx-header-top {
+            background-color: #004889;
+            color: white;
+        }
+
+        .dmx-header-main {
+            background-color: #005aa7;
+            color: white;
+        }
+
+        .dmx-search-input {
+            border-radius: 9999px;
+            padding-left: 1.5rem;
+            padding-right: 3rem;
+            background-color: #f1f2f3;
+            color: #333;
+        }
+
+        .dmx-search-btn {
+            background-color: #0060ad;
+            border-radius: 9999px;
+            padding: 0.5rem 1rem;
+            position: absolute;
+            right: 0.25rem;
+            top: 0.25rem;
+            height: calc(100% - 0.5rem);
+        }
+
+        .dmx-category-icon {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+        }
+
+        .dmx-hot-section {
+            background-color: #f2f3f5;
+        }
+
+        .dark .dmx-header-top,
+        .dark .dmx-header-main,
+        .dark .dmx-blue-dark {
+            background-color: #1a202c;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+        }
+        /* Quan trọng: Sử dụng `hidden` và `group-hover:block` của Tailwind hoặc JS để điều khiển */
+        /* Nếu dùng JS, không cần các quy tắc hover này trong CSS tùy chỉnh */
+        /* .category-menu .dropdown-menu,
+                .user-profile-menu .user-dropdown-menu {
+                    transition: all 0.3s ease-in-out;
+                    opacity: 0;
+                    visibility: hidden;
+                    transform: translateY(10px);
+                }
+                .category-menu:hover .dropdown-menu,
+                .user-profile-menu:hover .user-dropdown-menu {
+                    opacity: 1;
+                    visibility: visible;
+                    transform: translateY(0);
+                } */
+    </style>
+</head>
+<body class="dark:bg-gray-900 dark:text-gray-200">
+    <nav class="dmx-header-main py-3">
+        <div class="container mx-auto flex items-center justify-between px-4">
+            <a href="/" class="flex items-center space-x-2">
+                <img src="@Url.Content("~/images/computer.png")" class="h-8">
+                <span class="text-yellow-400 text-xl font-bold">MyShop</span>
+            </a>
+
+            <div class="relative category-menu group">
+                @* Thêm 'category-menu' và 'group' để JS/CSS có thể chọn *@
+                <button class="flex items-center text-white px-3 py-2 rounded-lg hover:bg-blue-600 focus:outline-none">
+                    <i class="fas fa-bars mr-2"></i>
+                    Danh mục
+                </button>
+                <div class="dropdown-menu hidden absolute top-full left-0 bg-white dark:bg-gray-800 shadow-lg rounded-lg mt-1 z-10 w-48">
+                    @if (ViewBag.Categories != null && (ViewBag.Categories as List<CateM>).Any())
+                    {
+                        foreach (var category in ViewBag.Categories as List<CateM>)
+                        {
+                            <a href="/danh-muc/@category.idCate" class="block px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-blue-600 hover:text-white">@category.nameCate</a>
+                        }
+                    }
+                    else
+                    {
+                        <p class="px-4 py-2 text-gray-500 dark:text-gray-400">Không có danh mục</p>
+                    }
+                </div>
+            </div>
+
+            <div class="relative flex-grow mx-6 max-w-xl">
+                <input type="text" id="searchInput" placeholder="Bạn tìm gì..." class="dmx-search-input w-full py-2 pl-4 pr-12 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:border-gray-600">
+                <button class="dmx-search-btn absolute right-1 top-1 flex items-center justify-center text-white p-2 focus:outline-none">
+                    <i class="fas fa-search"></i>
+                </button>
+                <div id="searchSuggestions" class="absolute top-full left-0 w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg mt-1 z-10 hidden">
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-4">
+                <a href="@Url.Action("Login", "Login")" class="flex items-center text-white hover:text-yellow-400">
+                    @* Đặt link đăng nhập trực tiếp tại đây *@
+                    <i class="fas fa-user-circle mr-1"></i>
+                    Đăng nhập
+                </a>
+                <a href="#" class="flex items-center text-white hover:text-yellow-400">
+                    <i class="fas fa-shopping-cart mr-1"></i>
+                    Giỏ hàng
+                </a>
+                <span class="dark-mode-toggle text-lg cursor-pointer text-white ml-4" onclick="toggleDarkMode()">🌙</span>
+
+                @{
+                    UserM currentUser = null;
+                    if (Context?.Session != null)
+                    {
+                        var currentUserJson = Context.Session.GetString("CurrentUser");
+                        if (!string.IsNullOrEmpty(currentUserJson))
+                        {
+                            try
+                            {
+                                currentUser = JsonSerializer.Deserialize<UserM>(currentUserJson);
+                            }
+                            catch (JsonException ex)
+                            {
+                                Console.WriteLine($"Lỗi deserialize UserM từ session trong _Layout: {ex.Message}");
+                            }
+                        }
+                    }
+                }
+                @if (currentUser != null)
+                {
+                    <div class="relative user-profile-menu ml-4">
+                        @* Thêm 'user-profile-menu' để JS có thể chọn *@
+                        <a href="#" class="flex items-center space-x-2 text-white no-underline">
+                            <img src="@Url.Content(string.IsNullOrEmpty(currentUser.Image) ? "~/images/noimage.png" : currentUser.Image)"
+                                 alt="@currentUser.nameUser"
+                                 class="w-8 h-8 rounded-full object-cover border-2 border-yellow-400"
+                                 onerror="this.onerror=null;this.src='@Url.Content("~/images/noimage.png")';" />
+                            <span class="text-sm font-semibold text-yellow-400 user-name">@currentUser.nameUser</span>
+                            <i class="fas fa-caret-down text-yellow-400"></i>
+                        </a>
+                        <div class="user-dropdown-menu hidden absolute top-full right-0 bg-white dark:bg-gray-800 shadow-lg rounded-lg mt-1 z-10 w-48">
+                            <a href="@Url.Action("Profile", "Profile")" class="block px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-blue-600 hover:text-white">
+                                <i class="fas fa-user-circle mr-2"></i> Thông tin
+                            </a>
+                            <a href="@Url.Action("Index", "OrderHistory")" class="block px-4 py-2 text-gray-800 dark:text-gray-200 hover:bg-blue-600 hover:text-white">
+                                <i class="fas fa-history mr-2"></i> Lịch sử mua hàng
+                            </a>
+                            <a href="@Url.Action("Logout", "Login")" class="block px-4 py-2 text-red-600 dark:text-red-400 hover:bg-red-700 hover:text-white">
+                                <i class="fas fa-sign-out-alt mr-2"></i> Đăng xuất
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </nav>
+
+    <div class="container body-content mx-auto px-4 py-8">
+        @RenderBody()
+    </div>
+
+    <footer class="text-center py-4 bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-8">
+        <p class="text-gray-600 dark:text-gray-400">© @DateTime.Now.ToString("yyyy") MyShop - dxuan</p>
+        <p class="text-gray-500 dark:text-gray-500 text-sm">Địa chỉ: 123 Đường ABC, Quận XYZ, TP. Hồ Chí Minh</p>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
+    @RenderSection("Scripts", required: false)
+    <script src="@Url.Content("~/Layout/scripts.js")" asp-append-version="true"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+﻿@model MongoCore.Models.ModelViews.CateM
+@{
+    Layout = "_Layout";
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">@ViewBag.Title</h1>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Chỉnh sửa danh mục</h6>
+        </div>
+        <div class="card-body">
+            <form asp-action="Edit" method="post">
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" name="_id" value="@Model._id" />
+                <input type="hidden" name="idCate" value="@Model.idCate" />
+
+                <div class="form-group">
+                    <label for="nameCate">Tên danh mục</label>
+                    <input type="text" class="form-control" id="nameCate" name="nameCate" value="@Model.nameCate" />
+                    <span class="text-danger">@Html.ValidationMessageFor(m => m.nameCate)</span>
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-2">Cập nhật</button>
+                <a href="/Admin/Cate" class="btn btn-secondary mt-2">Quay lại</a>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section myscript {
+    <partial name="_ValidationScriptsPartial" />
+}

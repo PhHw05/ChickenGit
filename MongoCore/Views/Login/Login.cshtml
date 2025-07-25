@@ -1,0 +1,75 @@
+﻿@model MongoCore.Models.ModelViews.LoginViewModel
+
+@{
+    ViewBag.Title = "Đăng nhập";
+    Layout = null; // Hoặc bạn có thể sử dụng layout chính nếu muốn hiển thị header/footer
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Shop</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f3f4f6; /* Light gray background */
+        }
+
+        .dark body {
+            background-color: #1a202c; /* Dark background */
+        }
+    </style>
+</head>
+<body class="dark:bg-gray-900 dark:text-gray-200">
+    <div class="w-full max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+        <h2 class="text-3xl font-bold text-center mb-6 text-gray-900 dark:text-white">Đăng nhập</h2>
+
+        <form asp-action="Login" method="post" class="space-y-4">
+            @Html.AntiForgeryToken() @* Thêm token chống CSRF *@
+
+            <div class="mb-4">
+                <label for="Email" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Email:</label>
+                <input type="email" id="Email" name="Email" asp-for="Email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 leading-tight focus:outline-none focus:shadow-outline" placeholder="Nhập email của bạn">
+                <span asp-validation-for="Email" class="text-red-500 text-xs italic"></span>
+            </div>
+
+            <div class="mb-6">
+                <label for="Password" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Mật khẩu:</label>
+                <input type="password" id="Password" name="Password" asp-for="Password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 mb-3 leading-tight focus:outline-none focus:shadow-outline" placeholder="Nhập mật khẩu của bạn">
+                <span asp-validation-for="Password" class="text-red-500 text-xs italic"></span>
+            </div>
+
+            @if (!ViewData.ModelState.IsValid && ViewData.ModelState[""] != null)
+            {
+                <div class="text-red-500 text-xs italic mb-4">
+                    @foreach (var error in ViewData.ModelState[""].Errors)
+                    {
+                        <p>@error.ErrorMessage</p>
+                    }
+                </div>
+            }
+
+            <div class="flex items-center justify-between">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Đăng nhập
+                </button>
+                <a href="#" class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
+                    Quên mật khẩu?
+                </a>
+            </div>
+            <div class="text-center mt-4">
+                <p class="text-gray-600 dark:text-gray-400">Bạn chưa có tài khoản? <a href="@Url.Action("Register", "Login")" class="font-bold text-blue-500 hover:text-blue-800">Đăng ký ngay</a></p>
+            </div>
+        </form>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+﻿@model MongoCore.Models.ModelViews.ProM
+@{
+    Layout = "_Layout";
+    var cateList = ViewBag.CateList as List<MongoCore.Models.ModelViews.CateM>;
+    int nextId = ViewBag.NextId ?? 1;
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">@ViewBag.Title</h1>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">@TempData["SuccessMessage"]</div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+    }
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Thêm sản phẩm mới</h6>
+        </div>
+        <div class="card-body">
+            <form asp-action="Create" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="namePro">Tên Sản phẩm</label>
+                    <input type="text" class="form-control" id="namePro" name="namePro" value="@Model?.namePro" />
+                    <span class="text-danger">@Html.ValidationMessageFor(m => m.namePro)</span>
+                </div>
+                <div class="form-group">
+                    <label for="Price">Giá</label>
+                    <input type="number" step="0.01" class="form-control" id="Price" name="Price" value="@Model?.Price" />
+                    <span class="text-danger">@Html.ValidationMessageFor(m => m.Price)</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="CateId">Danh mục</label>
+                    <select id="CateId" name="CateId" class="form-control" asp-items="@(new SelectList(ViewBag.CateList, "idCate", "nameCate"))">
+                        <option value="">Chọn danh mục</option>
+                        @if (cateList != null)
+                        {
+                            foreach (var cate in cateList)
+                            {
+                                <option value="@cate.idCate" selected="@(cate.idCate == Model.CateId)">
+                                    @cate.nameCate
+                                </option>
+                            }
+                        }
+
+                    </select>
+                    <span class="text-danger">@Html.ValidationMessageFor(m => m.CateId)</span>
+                </div>
+                <div class="form-group">
+                    <label for="Image">Hình ảnh</label>
+                    <input type="file" class="form-control-file" id="Image" name="Image" accept="image/*" />
+                    <span class="text-danger">@Html.ValidationMessageFor(m => m.Image)</span>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary mt-2">Thêm</button>
+                    <a href="/Admin/Pro" class="btn btn-secondary mt-2">Quay lại</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section myscript {
+    <partial name="_ValidationScriptsPartial" />
+}

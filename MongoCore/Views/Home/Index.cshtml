@@ -1,0 +1,100 @@
+﻿@model List<MongoCore.Models.ModelViews.ProM>
+@using MongoCore.Models.ModelViews;
+@using System.Globalization
+@{
+    Layout = "_Layout";
+    ViewBag.Title = "Trang chủ";
+}
+
+<!-- Hot Categories / Quick Links Bar (Giữ nguyên) -->
+<div class="dmx-blue-dark py-2 mb-8">
+    <div class="container mx-auto flex justify-around items-center px-4 text-white text-sm">
+        @if (ViewBag.Categories != null && (ViewBag.Categories as List<CateM>).Any())
+        {
+            foreach (var category in (ViewBag.Categories as List<CateM>).Take(9))
+            {
+                <a href="/danh-muc/@category.idCate" class="hover:text-yellow-400">@category.nameCate</a>
+            }
+        }
+        else
+        {
+            <span class="text-gray-400">Không có danh mục</span>
+        }
+    </div>
+</div>
+<!-- Sản phẩm nổi bật (Hot Products) - Cập nhật giao diện -->
+<div class="dmx-hot-section p-6 rounded-lg mb-8">
+    <h3 class="text-2xl font-bold text-gray-800 dark:text-white mb-6 text-center">Sản phẩm nổi bật</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        @* Điều chỉnh số cột *@
+        @if (Model != null && Model.Any())
+        {
+            foreach (var product in Model)
+            {
+                <a href="@Url.Action("Detail", "Pro", new { id = product._id.ToString() })" class="block bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden relative">
+
+                    <div class="h-48 flex items-center justify-center overflow-hidden">
+                        <img src="@Url.Content(string.IsNullOrEmpty(product.Image) ? "~/images/noimage.png" : product.Image)"
+                             alt="@product.namePro"
+                             class="object-contain h-full w-full p-2" @* object-contain để ảnh không bị cắt *@
+                             onerror="this.onerror=null;this.src='@Url.Content("~/images/noimage.png")';" />
+                    </div>
+
+                    <div class="p-4 text-center">
+                        <h4 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 truncate">@product.namePro</h4>
+
+                        @* Hiển thị giá (đảm bảo Price là kiểu số trong ProM) *@
+                        @if (product.Price > 0)
+                        {
+                            <p class="text-red-600 text-xl font-bold mb-1">
+                                @product.Price.ToString("N0", new CultureInfo("vi-VN"))₫
+                            </p>                        
+                        }
+                        else
+                        {
+                            <p class="text-gray-500 text-md">Liên hệ để biết giá</p>
+                        }
+                        <div class="text-xs text-gray-600 dark:text-gray-400 mt-2">
+                        </div>
+
+                        <button class="mt-4 w-full bg-yellow-400 text-blue-800 font-bold py-2 rounded-lg hover:bg-yellow-500 transition">MUA Ngay</button>
+                    </div>
+                </a>
+            }
+        }
+        else
+        {
+            <p class="col-span-full text-gray-500 dark:text-gray-400 text-center">Không có sản phẩm nào để hiển thị.</p>
+        }
+    </div>
+</div>
+
+<p class="text-gray-600 dark:text-gray-400 mt-8 text-xl font-semibold">Sản phẩm đã xem</p>
+
+@if (ViewBag.Viewed != null && ((List<ProM>)ViewBag.Viewed).Any())
+{
+    <form asp-action="ClearViewed" method="post" class="mb-4">
+        <button type="submit" class="text-blue-600 dark:text-blue-400 cursor-pointer hover:underline">Xóa lịch sử</button>
+    </form>
+
+    <div class="flex overflow-x-auto gap-4 pb-4">
+        @foreach (var p in (List<ProM>)ViewBag.Viewed)
+        {
+            <a href="@Url.Action("Detail", "Pro", new { id = p._id })"
+               class="min-w-[200px] bg-white dark:bg-gray-800 rounded-lg shadow-md relative flex-shrink-0">
+                <img src="@Url.Content(string.IsNullOrEmpty(p.Image) ? "~/images/noimage.png" : p.Image)"
+                     alt="@p.namePro"
+                     class="object-contain h-32 w-full p-2 rounded-t-lg" />
+
+                <div class="p-3">
+                    <h5 class="font-semibold text-sm text-gray-900 dark:text-white truncate">@p.namePro</h5>
+                    <p class="text-red-600 font-bold text-sm">@p.Price.ToString("N0", new System.Globalization.CultureInfo("vi-VN"))₫</p>
+                </div>
+            </a>
+        }
+    </div>
+}
+else
+{
+    <p class="text-gray-500 dark:text-gray-400">Chưa có sản phẩm nào được xem.</p>
+}

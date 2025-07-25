@@ -1,0 +1,130 @@
+﻿/* Custom CSS to better match Điện Máy Xanh's colors and styles */
+body {
+    font-family: 'Nunito', sans-serif;
+}
+
+.dmx-blue-dark {
+    background-color: #288ad6; /* Darker blue from DMX logo */
+}
+
+.dmx-yellow {
+    background-color: #ffd400; /* Yellow from DMX logo */
+}
+
+.dmx-header-top {
+    background-color: #004889; /* Darkest blue for top bar */
+    color: white;
+}
+
+.dmx-header-main {
+    background-color: #005aa7; /* Main header blue */
+    color: white;
+}
+
+.dmx-search-input {
+    border-radius: 9999px; /* Full rounded */
+    padding-left: 1.5rem;
+    padding-right: 3rem; /* Để chừa chỗ cho nút search */
+    background-color: #f1f2f3; /* Light grey background */
+    color: #333; /* Màu chữ */
+}
+
+.dmx-search-btn {
+    background-color: #0060ad;
+    border-radius: 9999px;
+    padding: 0.5rem 1rem;
+    position: absolute; /* Để nút nằm trong input */
+    right: 0.25rem;
+    top: 0.25rem;
+    height: calc(100% - 0.5rem); /* Để nút lấp đầy chiều cao input */
+}
+
+.dmx-category-icon {
+    width: 48px; /* Fixed size for icons */
+    height: 48px;
+    object-fit: contain; /* Đảm bảo ảnh không bị méo */
+}
+
+.dmx-hot-section {
+    background-color: #f2f3f5; /* Light grey background for hot categories */
+}
+
+/* Override default Tailwind dark mode if necessary for DMX colors */
+.dark .dmx-header-top,
+.dark .dmx-header-main,
+.dark .dmx-blue-dark {
+    background-color: #1a202c; /* Hoặc một màu tối hơn của DMX blue */
+}
+
+/* Ensure images scale correctly */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Thêm hiệu ứng hover cho dropdown category */
+.category-menu .dropdown-menu {
+    transition: all 0.3s ease-in-out;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+}
+
+.category-menu:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* Thêm hiệu ứng hover cho dropdown user profile */
+.user-profile-menu .user-dropdown-menu {
+    transition: all 0.3s ease-in-out;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+}
+
+.user-profile-menu:hover .user-dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+/* ... (các style đã có) ... */
+
+/* Styles for Product Cards on Home Page */
+.dmx-hot-section .object-contain {
+    object-fit: contain;
+}
+
+.dmx-hot-section .h-48 {
+    height: 12rem; /* 48 * 4px = 192px */
+}
+
+/* Optional: Add hover effect for product card */
+.dmx-hot-section a.block:hover {
+    transform: translateY(-3px); /* Nhấc nhẹ lên khi hover */
+}
+
+.dmx-hot-section a.block {
+    transition: transform 0.2s ease-in-out;
+}
+
+/* For the "MUA ONLINE RẺ HƠN" button */
+.dmx-hot-section button {
+    font-size: 0.875rem; /* text-sm */
+    padding: 0.5rem 1rem;
+}
+
+/* For the badge (if you implement it) */
+.dmx-product-badge {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    background-color: #e53e3e; /* Red-600 */
+    color: white;
+    font-size: 0.75rem; /* text-xs */
+    font-weight: bold;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    z-index: 10;
+}

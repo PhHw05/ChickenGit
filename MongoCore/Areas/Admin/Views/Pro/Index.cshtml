@@ -1,0 +1,124 @@
+﻿@model List<MongoCore.Models.ModelViews.ProM>
+
+@{
+    Layout = "_Layout";
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-4 text-gray-800">@ViewBag.Title</h1>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Đóng">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+    }
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="close" data-dismiss="alert" aria-label="Đóng">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+    }
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Danh sách sản phẩm</h6>
+            <a href="@Url.Action("Create")" class="btn btn-sm btn-success">+ Thêm mới</a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th style="width: 10%">Mã</th>
+                            <th>Tên sản phẩm</th>
+                            <th>Giá</th>
+                            <th>Thương hiệu</th>
+                            <th>Hình ảnh</th>
+                            <th>Danh mục</th>
+                            <th style="width: 20%">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item._id</td>
+                                <td>@item.namePro</td>
+                                <td>
+                                    @if (item.Variants != null && item.Variants.Any())
+                                    {
+                                        @(item.Variants.First().Price.ToString("C"))
+                                    }
+                                    else
+                                    {
+                                        <span>Chưa có giá</span>
+                                    }
+                                </td>
+                                <td>
+                                    <img src="@(string.IsNullOrEmpty(item.Image) ? "/images/noimage.png" : item.Image)" alt="Image" style="width:50px;height:50px;" />
+                                </td>
+                                <td>
+                                    @{
+                                        string cateName = "Không xác định";
+                                        if (ViewBag.CateList != null)
+                                        {
+                                            var cateList = ViewBag.CateList as List<MongoCore.Models.ModelViews.CateM>;
+                                            var cate = cateList?.FirstOrDefault(c => c.idCate == item.CateId);
+                                            if (cate != null)
+                                            {
+                                                cateName = cate.nameCate;
+                                            }
+                                        }
+                                    }
+                                    @cateName
+                                </td>
+                                <td>
+                                    <a href="@Url.Action("Edit", new { id = item._id })" class="btn btn-warning btn-sm">Sửa</a>
+                                    <form action="@Url.Action("Delete", new { id = item._id })" method="post" class="d-inline">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này không?');">Xóa</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section myscript {
+    <script src="~/admin/vendor/jquery/jquery.min.js"></script>
+    <script src="~/admin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/admin/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="~/admin/js/sb-admin-2.min.js"></script>
+    <script src="~/admin/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/admin/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#dataTable').DataTable({
+                "pageLength": 10,
+                "lengthChange": false,
+                "language": {
+                    "search": "Tìm kiếm:",
+                    "paginate": {
+                        "previous": "Trước",
+                        "next": "Sau"
+                    },
+                    "zeroRecords": "Không tìm thấy kết quả nào",
+                    "info": "Hiển thị _START_ đến _END_ của _TOTAL_ mục",
+                    "infoEmpty": "Không có dữ liệu",
+                    "emptyTable": "Không có dữ liệu trong bảng"
+                }
+            });
+        });
+    </script>
+}

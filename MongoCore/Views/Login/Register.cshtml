@@ -1,0 +1,84 @@
+﻿@model MongoCore.Models.ModelViews.RegisterViewModel
+
+@{
+    ViewBag.Title = "Đăng ký";
+    Layout = null; // Hoặc sử dụng layout chính nếu muốn
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - BonHub</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f3f4f6;
+        }
+
+        .dark body {
+            background-color: #1a202c;
+        }
+    </style>
+</head>
+<body class="dark:bg-gray-900 dark:text-gray-200">
+    <div class="w-full max-w-md bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+        <h2 class="text-3xl font-bold text-center mb-6 text-gray-900 dark:text-white">Đăng ký tài khoản</h2>
+
+        <form asp-action="Register" method="post" class="space-y-4">
+            @Html.AntiForgeryToken()
+
+            <div class="mb-4">
+                <label for="Name" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Tên người dùng:</label>
+                <input type="text" id="Name" name="Name" asp-for="Name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 leading-tight focus:outline-none focus:shadow-outline" placeholder="Nhập tên của bạn">
+                <span asp-validation-for="Name" class="text-red-500 text-xs italic"></span>
+            </div>
+
+            <div class="mb-4">
+                <label for="Email" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Email:</label>
+                <input type="email" id="Email" name="Email" asp-for="Email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 leading-tight focus:outline-none focus:shadow-outline" placeholder="Nhập email của bạn">
+                <span asp-validation-for="Email" class="text-red-500 text-xs italic"></span>
+            </div>
+
+            <div class="mb-6">
+                <label for="Password" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Mật khẩu:</label>
+                <input type="password" id="Password" name="Password" asp-for="Password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 mb-3 leading-tight focus:outline-none focus:shadow-outline" placeholder="Nhập mật khẩu của bạn">
+                <span asp-validation-for="Password" class="text-red-500 text-xs italic"></span>
+            </div>
+
+            <div class="mb-6">
+                <label for="ConfirmPassword" class="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Xác nhận mật khẩu:</label>
+                <input type="password" id="ConfirmPassword" name="ConfirmPassword" asp-for="ConfirmPassword" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 mb-3 leading-tight focus:outline-none focus:shadow-outline" placeholder="Xác nhận mật khẩu của bạn">
+                <span asp-validation-for="ConfirmPassword" class="text-red-500 text-xs italic"></span>
+            </div>
+
+            @if (!ViewData.ModelState.IsValid && ViewData.ModelState[""] != null)
+            {
+                <div class="text-red-500 text-xs italic mb-4">
+                    @foreach (var error in ViewData.ModelState[""].Errors)
+                    {
+                        <p>@error.ErrorMessage</p>
+                    }
+                </div>
+            }
+
+            <div class="flex items-center justify-center">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                    Đăng ký
+                </button>
+            </div>
+            <div class="text-center mt-4">
+                <p class="text-gray-600 dark:text-gray-400">Đã có tài khoản? <a href="@Url.Action("Login", "Login")" class="font-bold text-blue-500 hover:text-blue-800">Đăng nhập</a></p>
+            </div>
+        </form>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation/1.19.3/jquery.validate.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validation-unobtrusive/3.2.12/jquery.validate.unobtrusive.min.js"></script>
+</body>
+</html>

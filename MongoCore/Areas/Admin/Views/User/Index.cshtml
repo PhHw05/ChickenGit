@@ -1,0 +1,63 @@
+﻿@model List<MongoCore.Models.ModelViews.UserM>
+
+@{
+    Layout = "_Layout";
+}
+
+<div class="container-fluid">
+    <h1 class="h3 mb-2 text-gray-800">@ViewBag.Title</h1>
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <a href="@Url.Action("Create")" class="btn btn-primary btn-sm float-right">Thêm mới</a>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>Mã Người dùng</th>
+                            <th>Tên Người dùng</th>
+                            <th>Hình ảnh</th>
+                            <th>Email</th>
+                            <th>Quyền</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.idUser</td>
+                                <td>@item.nameUser</td>
+                                <td><img src="@(string.IsNullOrEmpty(item.Image) ? "/images/noimage.png" : item.Image)" alt="Image" style="width:50px;height:50px;" /></td>
+                                <td>@item.Email</td>
+                                <td>@item.Role</td>
+                                <td>
+                                    <a href="@Url.Action("Edit", new { id = item._id })" class="btn btn-warning btn-sm">Sửa</a>
+                                    <form action="@Url.Action("Delete", new { id = item._id })" method="post" style="display:inline;">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc muốn xóa?');">Xóa</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section myscript {
+    <script src="~/admin/vendor/jquery/jquery.min.js"></script>
+    <script src="~/admin/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="~/admin/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="~/admin/js/sb-admin-2.min.js"></script>
+    <script src="~/admin/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/admin/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#dataTable').DataTable();
+        });
+    </script>
+}
